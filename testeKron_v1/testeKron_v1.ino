@@ -11,7 +11,7 @@ const char *broker = "m16.cloudmqtt.com";//"mqtt.thingspeak.com";
 const int portMqtt = 14391;
 const char *userNameMqtt = "lbhkbooa";
 const char *passwordMqtt = "8fgN0cELBlX8";
-char* topic = "ks-3000";
+char* topic = "testeGrafana";
 char* topic2 = "testeEdu";
 bool libera = 0;
 unsigned long lastTime = 0, cont = 0;
@@ -53,13 +53,16 @@ void loop(){
     if(clientMqtt.connected()){
       cont += 1;
       char *texto = "";
-      sprintf(texto,  "[{\"edu\":\"%d\"}]", cont);
+      sprintf(texto,  "%d", cont);
       if(clientMqtt.publish(topic, texto)){
         Serial.println("Publicado!");    
       }
       else{
         Serial.println("Erro ao publicar!"); 
       }
+    }
+    else{
+      mqttConnect();      
     }
   }
   if(libera) if(millis() - lastTime >= 1500) libera = 0;
