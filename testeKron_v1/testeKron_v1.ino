@@ -4,8 +4,8 @@
 
 #define   PIN_BT    D3
 
-const char *ssid = "Automacao";
-const char *password = "9xg14230pD";
+const char *ssid = "TP LINK";
+const char *password = "morais1212";
 
 const char *broker = "m16.cloudmqtt.com";//"mqtt.thingspeak.com";
 const int portMqtt = 14391;
@@ -34,24 +34,30 @@ void setup(){
   Serial.begin(9600);
 
   pinMode(PIN_BT, INPUT_PULLUP);
+  pinMode(LED_BUILTIN, OUTPUT);
 
+  digitalWrite(LED_BUILTIN, 1); //Led desligado
   WiFi.begin(ssid, password);
   while(WiFi.status() != WL_CONNECTED){
     delay(500);
     Serial.print(".");
   }
   Serial.println();
+  digitalWrite(LED_BUILTIN, 0); //Led ligado
   Serial.print("Wifi Conectado!");
   
   mqttConnect();
+  randomSeed(analogRead(0));
 }
 
 void loop(){
-  if(!digitalRead(PIN_BT) && !libera){
-    libera = 1;
+  //if(!digitalRead(PIN_BT) && !libera){
+  //  libera = 1;
+  if(millis() - lastTime >= 7000){
     lastTime = millis();
     if(clientMqtt.connected()){
-      cont += 1;
+      //cont += 1;
+      cont = random(10, 200);
       char *texto = "";
       sprintf(texto,  "%d", cont);
       if(clientMqtt.publish(topic, texto)){
@@ -65,7 +71,7 @@ void loop(){
       mqttConnect();      
     }
   }
-  if(libera) if(millis() - lastTime >= 1500) libera = 0;
+  //if(libera) if(millis() - lastTime >= 1500) libera = 0;
 }
 
 void mqttConnect(){
@@ -78,7 +84,7 @@ void mqttConnect(){
     else{
       Serial.println("Falha ao conectar no broker MQTT.");
     }
-    delay(1000);
+    delay(500);
   }while(!clientMqtt.connected());
   clientMqtt.setCallback(callbackTeste);
   clientMqtt.subscribe(topic2);
